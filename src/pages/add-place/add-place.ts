@@ -3,9 +3,13 @@ import {IonicPage, ModalController, LoadingController, ToastController} from 'io
 import {NgForm} from '@angular/forms'
 import { Geolocation } from '@ionic-native/geolocation';
 import { Camera } from '@ionic-native/camera';
+import { File } from '@ionic-native/file';
+
 import {SetLocationPage} from "../set-location/set-location";
 import {Location} from "../../models/location"
 import {PlacesService} from "../../services/places"
+
+declare var cordova:any;
 @IonicPage()
 @Component({
   selector: 'page-add-place',
@@ -23,6 +27,7 @@ export class AddPlacePage {
               private toastCtrl:ToastController,
               private geolocation: Geolocation,
               private camera: Camera,
+              private file: File,
   private placesService: PlacesService) {}
   onSubmit(form:NgForm){
     console.log(form.value)
@@ -73,11 +78,31 @@ export class AddPlacePage {
             encodingType:this.camera.EncodingType.JPEG,
             correctOrientation:true
         }).then((imageData) => {
-            console.log(imageData);
+            const currentName=imageData.replace(/^.*[\\\/]/, '');
+            const path = imageData.replace(/[^\/]*$/, '');
+            this.file.moveFile(path, currentName, cordova.file.dataDirectory, currentName).then((data)=>{
+                this.imageUrl= data.nativeURL;
+                this.camera.cleanup();
+                //this.file.removeFile(path,currentName)
+            },(error)=>{
+                this.imageUrl='';
+                let toast = this.toastCtrl.create({
+                    message:'Could not save the image. Please try again',
+                    duration:2500
+                });
+                toast.present();
+                this.camera.cleanup()
+            })
             this.imageUrl=imageData;
             //let base64Image = 'data:image/jpeg;base64,' + imageData;
         }, (error) => {
-            console.log(error)
+            this.imageUrl='';
+            let toast = this.toastCtrl.create({
+                message:'Could not take the image. Please try again',
+                duration:2500
+            });
+            toast.present();
+            this.camera.cleanup()
         });
     }
 
