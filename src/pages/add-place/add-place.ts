@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController } from 'ionic-angular';
+import {IonicPage, ModalController, LoadingController, ToastController} from 'ionic-angular';
 import {NgForm} from '@angular/forms'
 import { Geolocation } from '@ionic-native/geolocation';
+import { Camera } from '@ionic-native/camera';
 import {SetLocationPage} from "../set-location/set-location";
 import {Location} from "../../models/location"
 @IonicPage()
@@ -16,7 +17,10 @@ export class AddPlacePage {
   };
   locationIsSet = false;
   constructor(private modalCtrl: ModalController,
-              private geolocation: Geolocation) {}
+              public loadingCtrl: LoadingController,
+              private toastCtrl:ToastController,
+              private geolocation: Geolocation,
+              private camera: Camera) {}
   onSubmit(form:NgForm){
     console.log(form.value)
   }
@@ -33,14 +37,35 @@ export class AddPlacePage {
     )
   }
     onLocate(){
+        let loader = this.loadingCtrl.create({
+            content: 'Getting your location...'
+        });
+        loader.present();
         this.geolocation.getCurrentPosition().then(location => {
+            loader.dismiss();
             this.location.lat = location.coords.latitude;
             this.location.lng = location.coords.longitude;
             this.locationIsSet = true;
-         })
-        //     .catch(error => {
-        //     console.log('Error getting location', error);
-        // });
+         },(error)=>{
+            loader.dismiss();
+            const toast = this.toastCtrl.create({
+                message:"Couldn't get location, please pick it manually!",
+                duration:2500
+            });
+            toast.present();
+        });
+    }
+
+    onTakePhoto(){
+        this.camera.getPicture({
+            encodingType:this.camera.EncodingType.JPEG,
+            correctOrientation:true
+        }).then((imageData) => {
+            console.log(imageData);
+            //let base64Image = 'data:image/jpeg;base64,' + imageData;
+        }, (error) => {
+            console.log(error)
+        });
     }
 
 }
