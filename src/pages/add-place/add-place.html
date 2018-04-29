@@ -58,14 +58,14 @@
         </button>
       </ion-col>
     </ion-row>
-    <ion-row>
+    <ion-row *ngIf="imageUrl != ''">
       <ion-col>
-        <img [src]="" alt="clicked pic">
+        <img [src]="imageUrl" alt="clicked pic">
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <button ion-button block color="secondary" type="submit" [disabled]="!addform.valid || !locationIsSet">Add this Place</button>
+        <button ion-button block color="secondary" type="submit" [disabled]="!addform.valid || !locationIsSet || imageUrl==''">Add this Place</button>
       </ion-col>
     </ion-row>
   </ion-grid>

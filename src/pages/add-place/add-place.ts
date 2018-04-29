@@ -5,6 +5,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { Camera } from '@ionic-native/camera';
 import {SetLocationPage} from "../set-location/set-location";
 import {Location} from "../../models/location"
+import {PlacesService} from "../../services/places"
 @IonicPage()
 @Component({
   selector: 'page-add-place',
@@ -16,13 +17,24 @@ export class AddPlacePage {
       lng:144.94130110000003
   };
   locationIsSet = false;
+  imageUrl=''
   constructor(private modalCtrl: ModalController,
               public loadingCtrl: LoadingController,
               private toastCtrl:ToastController,
               private geolocation: Geolocation,
-              private camera: Camera) {}
+              private camera: Camera,
+  private placesService: PlacesService) {}
   onSubmit(form:NgForm){
     console.log(form.value)
+      this.placesService.addPlace(form.value.title,form.value.description,this.location, this.imageUrl);
+      form.reset();
+      this.location={
+          lat:-37.82054,
+          lng:144.94130110000003
+      };
+      this.imageUrl='';
+      this.locationIsSet=false;
+
   }
   onOpenMap(){
     const modal = this.modalCtrl.create(SetLocationPage, {location:this.location, isSet:this.locationIsSet})
@@ -62,6 +74,7 @@ export class AddPlacePage {
             correctOrientation:true
         }).then((imageData) => {
             console.log(imageData);
+            this.imageUrl=imageData;
             //let base64Image = 'data:image/jpeg;base64,' + imageData;
         }, (error) => {
             console.log(error)
