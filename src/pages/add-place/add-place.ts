@@ -12,18 +12,23 @@ export class AddPlacePage {
   location:Location ={
       lat:-37.82054,
       lng:144.94130110000003
-  }
+  };
+  locationIsSet = false;
   constructor(private modalCtrl: ModalController) {}
   onSubmit(form:NgForm){
     console.log(form.value)
   }
-  //
-  // ionViewDidLoad() {
-  //   console.log('ionViewDidLoad AddPlacePage');
-  // }
   onOpenMap(){
-    const modal = this.modalCtrl.create(SetLocationPage, {location:this.location})
+    const modal = this.modalCtrl.create(SetLocationPage, {location:this.location, isSet:this.locationIsSet})
     modal.present();
+    modal.onDidDismiss(
+        data=>{
+            if(data){
+                this.location = data.location;
+                this.locationIsSet = true;
+            }
+        }
+    )
   }
 
 }
