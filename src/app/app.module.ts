@@ -7,6 +7,7 @@ import {AgmCoreModule} from "@agm/core";
 import { Geolocation } from '@ionic-native/geolocation';
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { IonicStorageModule } from '@ionic/storage';
 
 import {PlacesService} from "../services/places"
 import { MyApp } from './app.component';
@@ -26,6 +27,7 @@ import {SetLocationPage} from "../pages/set-location/set-location";
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot(),
     AgmCoreModule.forRoot({
       apiKey:'AIzaSyDfFd07RQQiCQjfx06ZiPGdfIoDdAKN_tk'
     })
